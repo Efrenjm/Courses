@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-cream: #fcf9f3;
+  --color-brand-pill: #efe6d5;
+  --color-brand-pill-hover: #e0d9c8;
+  --color-brand-card-teal: #b9e5e2;
+  --color-brand-card-teal-dark: #89ccc4;
+  --color-brand-card-purple: #d1befb;
+  --color-brand-card-pink: #f9c0d2;
+  --color-brand-card-yellow: #feeb8f;
+
+  --border-width-thick: 2px;
+  --radius-brand: 24px;
+
+  --font-inter: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-cream font-inter text-[#111];
+  }
+}
+
+@layer components {
+  .neo-card {
+    @apply bg-white border-2 border-[#111] rounded-brand overflow-hidden transition-transform duration-200;
+  }
+
+  .neo-card:hover {
+    @apply -translate-y-1;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-4 px-5 py-3.5 rounded-full transition-colors duration-200;
+  }
+
+  .nav-item-active {
+    @apply bg-brand-pill text-[#111] font-semibold;
+  }
+
+  .nav-item-inactive {
+    @apply text-[#555] font-medium hover:bg-brand-pill-hover;
+  }
+}
