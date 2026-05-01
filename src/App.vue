@@ -1,11 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div class="min-h-screen bg-brand-cream text-[#111] flex font-inter">
+    <!-- Content Area -->
+    <main class="flex-1 overflow-y-auto">
+      <router-view />
+    </main>
+  </div>
 </template>
-
-<style scoped></style>
