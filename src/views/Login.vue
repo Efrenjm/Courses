@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useForm } from 'vee-validate';
 import AppButton from '@/components/AppButton.vue';
 import AppInput from '@/components/AppInput.vue';
+import { useFormKit } from '@/utils/form';
 import { Validators } from '@/utils/validators';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
-const { defineField, errors, handleSubmit, meta } = useForm({
+const { defineField, errors, handleSubmit, meta } = useFormKit({
   initialValues: {
     email: '',
     password: '',
@@ -46,6 +46,7 @@ async function onGoogleLogin() {
           label="Email Address"
           type="email"
           placeholder="your@email.com"
+          autocomplete="username"
           :error="errors.email"
         />
         <AppInput
@@ -54,6 +55,7 @@ async function onGoogleLogin() {
           label="Password"
           type="password"
           placeholder="••••••••"
+          autocomplete="current-password"
           :error="errors.password"
         />
         <AppButton
@@ -64,8 +66,6 @@ async function onGoogleLogin() {
           Sign In
         </AppButton>
       </form>
-
-
       <div class="relative my-8 text-center">
         <div class="absolute inset-0 flex items-center">
           <div class="w-full border-t-2 border-brand-pill-hover"></div>
@@ -74,7 +74,6 @@ async function onGoogleLogin() {
           Or continue with
         </span>
       </div>
-
       <div class="flex flex-col gap-3">
         <AppButton variant="secondary" @click="onGoogleLogin" class="w-full">
           <template #icon-left>
@@ -83,7 +82,6 @@ async function onGoogleLogin() {
           Google
         </AppButton>
       </div>
-
       <p class="mt-8 text-center text-[15px] font-medium text-[#666]">
         Don't have an account?
         <router-link to="/register" class="text-[#111] font-bold underline underline-offset-4 decoration-brand-card-yellow decoration-4">Register here</router-link>
