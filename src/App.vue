@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppToast from './components/AppToast.vue';
 </script>
 
 <template>
@@ -7,5 +8,6 @@
     <main class="flex-1 overflow-y-auto">
       <router-view />
     </main>
+    <AppToast />
   </div>
 </template>
