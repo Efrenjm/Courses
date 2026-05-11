@@ -1,8 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useUIStore } from '@/stores/ui';
+import { getFirebaseErrorMessage } from '@/utils/firebase-errors';
 import AppButton from '@/components/AppButton.vue';
 import AppInput from '@/components/AppInput.vue';
 import { useFormKit } from '@/utils/form';
 import { Validators } from '@/utils/validators';
+
+const router = useRouter();
+const authStore = useAuthStore();
+const uiStore = useUIStore();
+const isSubmitting = ref(false);
 
 const { defineField, errors, handleSubmit, meta, values } = useFormKit({
   initialValues: {
@@ -25,8 +35,19 @@ const [email, emailProps] = defineField('email');
 const [password, passwordProps] = defineField('password');
 const [confirmPassword, confirmPasswordProps] = defineField('confirmPassword');
 
-const onRegister = handleSubmit((formValues) => {
-  console.log('Registering with:', formValues);
+const onRegister = handleSubmit(async (formValues) => {
+  isSubmitting.value = true;
+  try {
+    await authStore.registerWithEmail(formValues.email, formValues.password);
+    uiStore.showToast('Account created successfully!', 'success');
+    router.push('/');
+  } catch (error: any) {
+    const message = getFirebaseErrorMessage(error.code);
+    uiStore.showToast(message, 'error');
+    console.error('Registration failed:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
 });
 </script>
 
@@ -73,7 +94,8 @@ const onRegister = handleSubmit((formValues) => {
         <AppButton
           type="submit"
           class="w-full mt-2"
-          :disabled="!meta.valid && meta.touched"
+          :disabled="(!meta.valid && meta.touched) || isSubmitting"
+          :loading="isSubmitting"
         >
           Sign Up
         </AppButton>

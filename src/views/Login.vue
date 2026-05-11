@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import { useUIStore } from '@/stores/ui';
+import { getFirebaseErrorMessage } from '@/utils/firebase-errors';
 import AppButton from '@/components/AppButton.vue';
 import AppInput from '@/components/AppInput.vue';
 import { useFormKit } from '@/utils/form';
 import { Validators } from '@/utils/validators';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+
+const router = useRouter();
+const authStore = useAuthStore();
+const uiStore = useUIStore();
+const isSubmitting = ref(false);
 
 const { defineField, errors, handleSubmit, meta } = useFormKit({
   initialValues: {
@@ -19,12 +29,34 @@ const { defineField, errors, handleSubmit, meta } = useFormKit({
 const [email, emailProps] = defineField('email');
 const [password, passwordProps] = defineField('password');
 
-const onEmailLogin = handleSubmit(() => {
-  console.log('Sign in with email:', email.value, password.value);
+const onEmailLogin = handleSubmit(async () => {
+  isSubmitting.value = true;
+  try {
+    await authStore.loginWithEmail(email.value, password.value);
+    uiStore.showToast('Welcome back!', 'success');
+    router.push('/');
+  } catch (error: any) {
+    const message = getFirebaseErrorMessage(error.code);
+    uiStore.showToast(message, 'error');
+    console.error('Login failed:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
 });
 
 async function onGoogleLogin() {
-  console.log('Sign in with Google');
+  isSubmitting.value = true;
+  try {
+    await authStore.loginWithGoogle();
+    uiStore.showToast('Welcome back!', 'success');
+    router.push('/');
+  } catch (error: any) {
+    const message = getFirebaseErrorMessage(error.code);
+    uiStore.showToast(message, 'error');
+    console.error('Google login failed:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script>
 
@@ -61,7 +93,8 @@ async function onGoogleLogin() {
         <AppButton
           type="submit"
           class="w-full mt-2"
-          :disabled="!meta.valid && meta.touched"
+          :disabled="(!meta.valid && meta.touched) || isSubmitting"
+          :loading="isSubmitting"
         >
           Sign In
         </AppButton>
@@ -75,7 +108,7 @@ async function onGoogleLogin() {
         </span>
       </div>
       <div class="flex flex-col gap-3">
-        <AppButton variant="secondary" @click="onGoogleLogin" class="w-full">
+        <AppButton variant="secondary" @click="onGoogleLogin" class="w-full" :disabled="isSubmitting">
           <template #icon-left>
             <font-awesome-icon :icon="faGoogle" />
           </template>
