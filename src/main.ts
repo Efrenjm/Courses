@@ -1,16 +1,21 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import App from './App.vue'
-import router from './router'
+import App from './App.vue';
+import router from './router';
+import { useAuthStore } from './stores/auth';
 
 import './assets/main.css';
 
-const app = createApp(App)
+const app = createApp(App);
+const pinia = createPinia();
 
-app.use(createPinia())
-app.use(router)
-app.component('font-awesome-icon', FontAwesomeIcon)
+app.use(pinia);
+app.use(router);
+app.component('font-awesome-icon', FontAwesomeIcon);
 
-app.mount('#app')
+const authStore = useAuthStore();
+authStore.initAuth().then(() => {
+  app.mount('#app')
+});
