@@ -6,6 +6,7 @@ interface Props {
   modelValue: string | number;
   label?: string;
   error?: string;
+  touched?: boolean;
   type?: 'text' | 'email' | 'password';
   placeholder?: string;
   disabled?: boolean;
@@ -16,6 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'text',
   label: '',
   error: '',
+  touched: false,
   placeholder: '',
   disabled: false,
 });
@@ -23,6 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:modelValue', 'blur']);
 
 const showPassword = ref(false);
+const displayError = computed(() => (props.touched ? props.error : ''));
 
 const inputType = computed(() => {
   if (props.type === 'password') {
@@ -56,7 +59,7 @@ function togglePassword() {
         :disabled="disabled"
         :autocomplete="autocomplete"
         class="w-full px-5 py-3.5 bg-white border-2 border-[#111] rounded-2xl outline-none transition-all duration-200 placeholder:text-gray-400 focus:ring-4 focus:ring-brand-pill-hover disabled:opacity-50 disabled:cursor-not-allowed shadow-sm group-hover:shadow-md pr-12"
-        :class="{ 'border-red-500 focus:ring-red-100': error }"
+        :class="{ 'border-red-500 focus:ring-red-100': displayError }"
         @input="onInput"
         @blur="onBlur"
       />
@@ -69,6 +72,6 @@ function togglePassword() {
         <font-awesome-icon :icon="showPassword ? faEyeSlash : faEye" />
       </button>
     </div>
-    <span v-if="error" class="text-xs font-medium text-red-500 ml-1">{{ error }}</span>
+    <span v-if="displayError" class="text-xs font-medium text-red-500 ml-1">{{ displayError }}</span>
   </div>
 </template>

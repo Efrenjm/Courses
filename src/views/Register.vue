@@ -14,7 +14,7 @@ const authStore = useAuthStore();
 const uiStore = useUIStore();
 const isSubmitting = ref(false);
 
-const { defineField, errors, handleSubmit, meta, values } = useFormKit({
+const { defineField, handleSubmit, meta, values } = useFormKit({
   initialValues: {
     email: '',
     password: '',
@@ -70,7 +70,6 @@ const onRegister = handleSubmit(async (formValues) => {
           type="email"
           placeholder="your@email.com"
           autocomplete="username"
-          :error="errors.email"
         />
         <AppInput
           v-model="password"
@@ -79,7 +78,6 @@ const onRegister = handleSubmit(async (formValues) => {
           type="password"
           placeholder="••••••••"
           autocomplete="new-password"
-          :error="errors.password"
         />
         <AppInput
           v-model="confirmPassword"
@@ -88,13 +86,12 @@ const onRegister = handleSubmit(async (formValues) => {
           type="password"
           placeholder="••••••••"
           autocomplete="new-password"
-          :error="errors.confirmPassword"
         />
 
         <AppButton
           type="submit"
           class="w-full mt-2"
-          :disabled="(!meta.valid && meta.touched) || isSubmitting"
+          :disabled="!meta.dirty || !meta.valid || isSubmitting"
           :loading="isSubmitting"
         >
           Sign Up

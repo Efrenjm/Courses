@@ -15,7 +15,7 @@ const authStore = useAuthStore();
 const uiStore = useUIStore();
 const isSubmitting = ref(false);
 
-const { defineField, errors, handleSubmit, meta } = useFormKit({
+const { defineField, handleSubmit, meta } = useFormKit({
   initialValues: {
     email: '',
     password: '',
@@ -79,7 +79,6 @@ async function onGoogleLogin() {
           type="email"
           placeholder="your@email.com"
           autocomplete="username"
-          :error="errors.email"
         />
         <AppInput
           v-model="password"
@@ -88,12 +87,11 @@ async function onGoogleLogin() {
           type="password"
           placeholder="••••••••"
           autocomplete="current-password"
-          :error="errors.password"
         />
         <AppButton
           type="submit"
           class="w-full mt-2"
-          :disabled="(!meta.valid && meta.touched) || isSubmitting"
+          :disabled="!meta.dirty || !meta.valid || isSubmitting"
           :loading="isSubmitting"
         >
           Sign In
