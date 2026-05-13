@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useUIStore } from '@/stores/ui';
 import { getFirebaseErrorMessage } from '@/utils/firebase-errors';
+import { hasStringProperty } from '@/utils/ts-utils';
 import AppButton from '@/components/AppButton.vue';
 import AppInput from '@/components/AppInput.vue';
 import { useFormKit } from '@/utils/form';
@@ -35,9 +36,13 @@ const onEmailLogin = handleSubmit(async () => {
     await authStore.loginWithEmail(email.value, password.value);
     uiStore.showToast('Welcome back!', 'success');
     router.push('/');
-  } catch (error: any) {
-    const message = getFirebaseErrorMessage(error.code);
-    uiStore.showToast(message, 'error');
+  } catch (error: unknown) {
+    if (hasStringProperty(error, 'code')) {
+      const message = getFirebaseErrorMessage(error.code);
+      uiStore.showToast(message, 'error');
+    } else {
+      uiStore.showToast('Login failed. Please check your credentials.', 'error');
+    }
     console.error('Login failed:', error);
   } finally {
     isSubmitting.value = false;
@@ -50,9 +55,13 @@ async function onGoogleLogin() {
     await authStore.loginWithGoogle();
     uiStore.showToast('Welcome back!', 'success');
     router.push('/');
-  } catch (error: any) {
-    const message = getFirebaseErrorMessage(error.code);
-    uiStore.showToast(message, 'error');
+  } catch (error: unknown) {
+    if (hasStringProperty(error, 'code')) {
+      const message = getFirebaseErrorMessage(error.code);
+      uiStore.showToast(message, 'error');
+    } else {
+      uiStore.showToast('Google login failed.', 'error');
+    }
     console.error('Google login failed:', error);
   } finally {
     isSubmitting.value = false;

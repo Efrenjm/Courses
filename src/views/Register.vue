@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useUIStore } from '@/stores/ui';
 import { getFirebaseErrorMessage } from '@/utils/firebase-errors';
+import { hasStringProperty } from '@/utils/ts-utils';
 import AppButton from '@/components/AppButton.vue';
 import AppInput from '@/components/AppInput.vue';
 import { useFormKit } from '@/utils/form';
@@ -41,9 +42,13 @@ const onRegister = handleSubmit(async (formValues) => {
     await authStore.registerWithEmail(formValues.email, formValues.password);
     uiStore.showToast('Account created successfully!', 'success');
     router.push('/');
-  } catch (error: any) {
-    const message = getFirebaseErrorMessage(error.code);
-    uiStore.showToast(message, 'error');
+  } catch (error: unknown) {
+    if (hasStringProperty(error, 'code')) {
+      const message = getFirebaseErrorMessage(error.code);
+      uiStore.showToast(message, 'error');
+    } else {
+      uiStore.showToast('An unexpected error occurred. Please try again.', 'error');
+    }
     console.error('Registration failed:', error);
   } finally {
     isSubmitting.value = false;
